@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { redirect } from "next/navigation";
+import SocialSignIn from "@/components/SocialSignIn";
 
 const LoginPage = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
@@ -96,6 +97,7 @@ const LoginPage = () => {
           </span>
         </div>
       </form>
+      <SocialSignIn/>
     </div>
   );
 };

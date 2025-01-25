@@ -30,7 +30,7 @@ export default async function Home({
       (currrentPage === 1 ? 0 : heroItemCount),
     take: itemsPerPage + (currrentPage === 1 ? heroItemCount : 0),
   });
-  console.log(products);
+ 
 
   return (
     <div className="flex flex-col items-center">
