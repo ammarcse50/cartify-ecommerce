@@ -5,6 +5,9 @@ import logo from "@/app/assets/logo.png";
 import { redirect } from "next/navigation";
 import { getCart } from "@/app/lib/cart";
 import ShoppingCartButton from "./ShoppingCartButton";
+import { getServerSession } from "next-auth";
+import { authOption } from "@/app/api/auth/[...nextauth]/route";
+import { signOut } from "next-auth/react";
 import NavClient from "./NavClient";
 
 // Server-side search logic
@@ -15,11 +18,20 @@ export async function searchProduct(formdata: FormData) {
     redirect("/search?query=" + searchQuery);
   }
 }
-
+const handleLogin = () => {
+  if (typeof window !== "undefined") {
+    window.location.href = "/api/auth/signin"; // Redirect to login
+  }
+};
+  
 // Navbar Component
 const Navbar = async () => {
   const cart = await getCart();
+    const session =await getServerSession(authOption);
 
+    console.log({session}.session?.user?.name);
+          
+ 
   return (
     <div className="bg-base-100">
       <div className="navbar max-w-7xl m-auto flex-col sm:flex-row ">
@@ -54,7 +66,7 @@ const Navbar = async () => {
             <ShoppingCartButton cart={cart} />
           </div>
           <div>
-            <NavClient />
+      <NavClient/>
           </div>
         </div>
       </div>

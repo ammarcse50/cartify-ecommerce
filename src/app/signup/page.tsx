@@ -59,12 +59,12 @@ const SignUpPage = () => {
         onSubmit={handleSubmit}
         className="bg-white p-6 rounded-lg shadow-lg w-80"
       >
-        <h2 className="text-2xl font-bold mb-4">Sign Up</h2>
+        <h2 className="text-2xl font-bold mb-4 text-black">Sign Up</h2>
 
         {error && <div className="text-red-500 mb-4">{error}</div>}
 
         <div className="mb-4">
-          <label htmlFor="name" className="block text-sm font-semibold">
+          <label htmlFor="name" className="block text-black text-sm font-semibold">
             Name
           </label>
           <input
@@ -80,7 +80,7 @@ const SignUpPage = () => {
         </div>
 
         <div className="mb-4">
-          <label htmlFor="email" className="block text-sm font-semibold">
+          <label htmlFor="email" className="block text-black text-sm font-semibold">
             Email
           </label>
           <input
@@ -96,7 +96,7 @@ const SignUpPage = () => {
         </div>
 
         <div className="mb-4">
-          <label htmlFor="password" className="block text-sm font-semibold">
+          <label htmlFor="password" className="block  text-black text-sm font-semibold">
             Password
           </label>
           <input
@@ -112,7 +112,7 @@ const SignUpPage = () => {
         </div>
 
         <div className="mb-4">
-          <label htmlFor="image" className="block text-sm font-semibold">
+          <label htmlFor="image" className="block text-black text-sm font-semibold">
             Profile Image URL
           </label>
           <input
@@ -136,7 +136,7 @@ const SignUpPage = () => {
         </button>
 
         <div className="mt-4 text-center">
-          <span className="text-sm">
+          <span className="text-sm text-black">
             Already have an account?{" "}
             <Link href="/login" className="text-blue-500 hover:underline">
               Login

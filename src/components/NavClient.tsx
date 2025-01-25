@@ -1,37 +1,31 @@
-// UserAuth.tsx (Client Component)
+"use client"
+import { signOut, useSession } from 'next-auth/react';
+import Link from 'next/link';
+import React from 'react';
 
-"use client"; // Mark the component as a client-side component
+const NavClient = () => {
+  const { data: session, status } = useSession();
 
-import React from "react";
-import { useAuth } from "./AuthContext"; // Import useAuth hook
-import Link from "next/link";
-
-const UserAuth = () => {
-  const { user, logout } = useAuth(); // Use the client-side hook
-
-  if (!user) {
-    return (
-      <Link
-        className="py-2 px-4 bg-fuchsia-500 text-white rounded-md"
-        href={"/login"}
-      >
-        Login
-      </Link>
-    );
+  // If the session is not loaded yet
+  if (status === "loading") {
+    return <p>Loading...</p>;
   }
 
   return (
     <div>
-      <p>Welcome, {user?.name || "User"}!</p>
-
-      <button
-        onClick={() => logout()} // Trigger the logout function
-        className="py-2 px-4 bg-fuchsia-500 rounded-md"
-      >
-        Logout
-      </button>
+      {/* If user is not logged in */}
+      {!session ? (
+        <Link className="btn btn-accent" href="/login">
+          Login
+        </Link>
+      ) : (
+        // If user is logged in, show Logout button
+        <button className="btn btn-secondary" onClick={() => signOut()}>
+          Logout
+        </button>
+      )}
     </div>
   );
 };
 
-export default UserAuth;
+export default NavClient;

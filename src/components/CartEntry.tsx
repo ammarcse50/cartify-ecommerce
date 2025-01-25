@@ -4,7 +4,7 @@ import { CartItemWithProduct } from "@/app/lib/cart";
 import { formatPrice } from "@/app/lib/format";
 import Image from "next/image";
 import Link from "next/link";
-import { JSX, useEffect, useState, useTransition } from "react";
+import {  useState, useTransition } from "react";
 
 interface CartEntryPage {
   cartItem: CartItemWithProduct;
@@ -15,26 +15,10 @@ export default function CartEntry({
   cartItem: { product, quantity },
   setProductQuantity,
 }: CartEntryPage) {
-  
   const [isPending, startTransition] = useTransition();
-  const [proQuantity,setQuantity]= useState(quantity)
+  const [proQuantity, setQuantity] = useState(quantity);
 
 
-  // useEffect(()=>{
-
-  //   return 
-
-
-  // },[product,quantity])
-
-  // const quantityOptions: JSX.Element[] = [];
-  // for (let i = 1; i <= 99; i++) {
-  //   quantityOptions.push(
-  //     <option value={1} key={i}>
-  //       {i}
-  //     </option>
-  //   );
-  // }
   return (
     <div>
       <div className="flex flex-wrap items-center gap-4">
@@ -51,19 +35,22 @@ export default function CartEntry({
           </Link>
           <div>price: {formatPrice(product?.price)}</div>
           <div className="my-1 flex items-center gap-2">
-            Quantity: <input type="number" onChange={e=>setQuantity(e.target.value)} className="input input-bordered w-10" max={30} min={1} />
-            {/* <select
-              className="select select-bordered w-full max-w-[80px]"
+            Quantity:
+            <input
+              type="number"
+              defaultValue={proQuantity}
               onChange={(e) => {
-                const newQuantity = parseInt(e.currentTarget.value);
+                const newQuantity = parseInt(e.target.value);
                 startTransition(async () => {
                   await setProductQuantity(product?.id, newQuantity);
                 });
+
+                setQuantity(newQuantity);
               }}
-              defaultValue={quantity}
-            >
-             
-            </select> */}
+              className="input input-bordered "
+              max={10}
+              min={1}
+            />
           </div>
           <div>Total:{formatPrice(product?.price * proQuantity)}</div>
           {isPending && <span className="loading loading-spinner loading-sm" />}
