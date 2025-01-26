@@ -12,21 +12,21 @@ const LoginPage = () => {
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
-     const email= formData.email;
-     const password= formData.password;
-     console.log(email,password);
-     const resp=await signIn('credentials',{
+    const email = formData.email;
+    const password = formData.password;
+    console.log(email, password);
+    const resp = await signIn("credentials", {
+      email,
+      password,
+      redirect: false,
+    });
 
-      email,password,redirect:false
-     })
-
-     if(resp?.status===200 && resp.ok)
-     {
-      redirect("/")
-     }
-
-     console.log("i am from loginpage",resp);
+    if (resp?.status === 200 && resp.ok) {
+      redirect("/");
     }
+
+    console.log("i am from loginpage", resp);
+  };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
@@ -96,8 +96,8 @@ const LoginPage = () => {
             </Link>
           </span>
         </div>
+        <SocialSignIn />
       </form>
-      <SocialSignIn/>
     </div>
   );
 };

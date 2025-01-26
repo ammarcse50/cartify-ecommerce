@@ -8,36 +8,6 @@ datasource db {
   relationMode = "prisma"
 }
 
-model Product {
-  id          Int        @id @default(autoincrement())
-  description String?    @db.VarChar(500)
-  imageUrl    String?    @db.VarChar(500)
-  name        String?    @db.VarChar(100)
-  price       Int?
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-  cartitem    cartitem[]
-
-  @@map("products")
-}
-
-model cart {
-  id        Int        @id @default(autoincrement())
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  userId    Int?
-  items     cartitem[]
-}
-
-model cartitem {
-  id        Int     @id @default(autoincrement())
-  productId Int
-  quantity  Int
-  cartId    Int
-  cart      cart    @relation(fields: [cartId], references: [id], onDelete: Cascade)
-  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
-}
-
 model account {
   id                Int     @id @default(autoincrement())
   userId            Int
@@ -53,6 +23,34 @@ model account {
   session_state     String?
 }
 
+model cart {
+  id        Int        @id @default(autoincrement())
+  createdAt DateTime   @default(now())
+  updatedAt DateTime
+  userId    Int?
+  items     cartitem[]
+}
+
+model cartitem {
+  id        Int      @id @default(autoincrement())
+  productId Int
+  product   products @relation(fields: [productId], references: [id], onDelete: Cascade)
+  quantity  Int
+  cartId    Int
+  cart      cart     @relation(fields: [cartId], references: [id])
+}
+
+model products {
+  id          Int        @id @default(autoincrement())
+  description String?    @db.VarChar(500)
+  imageUrl    String?    @db.VarChar(500)
+  name        String?    @db.VarChar(100)
+  price       Int?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime
+  cartitem    cartitem[]
+}
+
 model session {
   id           Int      @id @default(autoincrement())
   sessionToken String   @unique(map: "Session_sessionToken_key")
@@ -60,13 +58,28 @@ model session {
   expires      DateTime
 }
 
-model user {
-  id            Int       @id @default(autoincrement())
-  name          String?
-  email         String?
-  emailVerified DateTime? @updatedAt
-  image         String?
-  password      String
+model users {
+  id                         BigInt    @id @default(autoincrement())
+  company_id                 BigInt
+  username                   String    @db.VarChar(200)
+  username_secondary         String?   @db.VarChar(200)
+  email                      String?   @db.VarChar(255)
+  phone                      String?   @db.VarChar(255)
+  password                   String    @db.VarChar(300)
+  role_id                    BigInt?
+  language_id_default_choice Int?
+  is_lock                    Boolean?  @default(false)
+  is_default_user            Boolean   @default(false)
+  created_at                 DateTime  @db.DateTime(0)
+  created_by                 BigInt
+  updated_at                 DateTime? @db.DateTime(0)
+  updated_by                 BigInt?
+  is_active                  Boolean   @default(true)
+  is_approved                Boolean   @default(false)
+  is_temporary_password      Boolean   @default(false)
+
+  @@unique([username, company_id], map: "username")
+  @@index([role_id], map: "ref_role_id")
 }
 
 model verificationtoken {

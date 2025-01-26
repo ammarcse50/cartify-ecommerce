@@ -2,13 +2,14 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import SocialSignIn from "@/components/SocialSignIn";
 
 const SignUpPage = () => {
   const [formData, setFormData] = useState({
-    name: "",
+    username: "",
     email: "",
     password: "",
-    image: "",
+   
   });
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -19,7 +20,7 @@ const SignUpPage = () => {
 
     setLoading(true);
     setError(null);
-
+      
     try {
       const response = await fetch("/api/users/signup", {
         method: "POST",
@@ -70,8 +71,8 @@ const SignUpPage = () => {
           <input
             type="text"
             id="name"
-            name="name"
-            value={formData.name}
+            name="username"
+            value={formData.username}
             onChange={handleInputChange}
             className="input input-bordered w-full mt-2"
             placeholder="Enter your name"
@@ -111,7 +112,7 @@ const SignUpPage = () => {
           />
         </div>
 
-        <div className="mb-4">
+        {/* <div className="mb-4">
           <label htmlFor="image" className="block text-black text-sm font-semibold">
             Profile Image URL
           </label>
@@ -125,7 +126,7 @@ const SignUpPage = () => {
             placeholder="Enter your profile image URL"
             required
           />
-        </div>
+        </div> */}
 
         <button
           type="submit"
@@ -143,6 +144,7 @@ const SignUpPage = () => {
             </Link>
           </span>
         </div>
+        <SocialSignIn/>
       </form>
     </div>
   );

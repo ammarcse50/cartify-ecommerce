@@ -1,5 +1,5 @@
 import { cookies } from "next/headers";
-import prisma from "./db";
+import prisma from "../lib/db";
 import { Prisma } from "@prisma/client";
 
 export type CartWithProducts = Prisma.cartGetPayload<{
@@ -26,7 +26,7 @@ export async function getCart(): Promise<ShoppingCart | null> {
     const cookieStore = await cookies();
     const localCartId = cookieStore.get("localCartId")?.value;
     const cart = localCartId
-      ? await prisma.cart.findFirst({
+      ? await prisma.cart?.findFirst({
           where: { id: Number(localCartId) },
           include: {
             items: {

@@ -5,7 +5,7 @@ import PaginationBar from "../components/PaginationBar";
 import ProductCard from "../components/ProductCard";
 
 interface HomeProps {
-  searchParams: { page: string };
+  searchParams: { page?: string | number };
 }
 export default async function Home({
   searchParams: { page = "1" },
@@ -13,24 +13,25 @@ export default async function Home({
   const currrentPage = parseInt(page);
 
   const itemsPerPage = 5;
-  const heroItemCount = 1;
+  const heroItemCount = 1; //  for feature product we hold a array number of product
 
   //  step 1: get the total number of product
 
-  const totalItemCount = await prisma.product.count();
+  const totalItemCount = await prisma.products?.count() ;
   //  step2: number of item per page
 
-  const totalPages = Math.ceil((totalItemCount - heroItemCount) / itemsPerPage);
+  const totalPages = Math.ceil(totalItemCount / itemsPerPage);
 
-  const products = await prisma.product.findMany({
+  // page count: totalItems / itemPerPage
+
+  const products = await prisma.products.findMany({
     orderBy: { id: "desc" },
 
     skip:
       (currrentPage - 1) * itemsPerPage +
       (currrentPage === 1 ? 0 : heroItemCount),
-    take: itemsPerPage + (currrentPage === 1 ? heroItemCount : 0),
+      take: itemsPerPage + (currrentPage === 1 ? heroItemCount : 0),
   });
- 
 
   return (
     <div className="flex flex-col items-center">
@@ -59,8 +60,7 @@ export default async function Home({
         </div>
       )}
       <div className="my-4 grid  grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-        
-        {(currrentPage === 1? products.slice(1) : products).map((product) => (
+        {(currrentPage === 1 ? products.slice(2) : products).map((product) => (
           <ProductCard product={product} key={product.id} />
         ))}
       </div>

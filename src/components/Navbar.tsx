@@ -3,11 +3,10 @@ import Link from "next/link";
 import React from "react";
 import logo from "@/app/assets/logo.png";
 import { redirect } from "next/navigation";
-import { getCart } from "@/app/lib/cart";
+import { getCart } from "@/app/cart/cart";
 import ShoppingCartButton from "./ShoppingCartButton";
 import { getServerSession } from "next-auth";
 import { authOption } from "@/app/api/auth/[...nextauth]/route";
-import { signOut } from "next-auth/react";
 import NavClient from "./NavClient";
 
 // Server-side search logic

@@ -15,7 +15,7 @@ interface ProductPageProps {
 
 const getProduct = cache(async (id: string) => {
   // Ensure id is used correctly in the database query
-  const product = await prisma.product.findUnique({
+  const product = await prisma.product.findFirst({
     where: { id: parseInt(id) }, // Convert id to a number for the database query
   });
   // Handle not found product

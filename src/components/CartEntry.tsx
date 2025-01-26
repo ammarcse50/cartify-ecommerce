@@ -1,6 +1,6 @@
 "use client";
 
-import { CartItemWithProduct } from "@/app/lib/cart";
+import { CartItemWithProduct } from "@/app/cart/cart";
 import { formatPrice } from "@/app/lib/format";
 import Image from "next/image";
 import Link from "next/link";

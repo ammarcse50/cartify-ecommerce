@@ -1,5 +1,5 @@
 "use client";
-import { ShoppingCart } from "@/app/lib/cart";
+import { ShoppingCart } from "@/app/cart/cart";
 import { formatPrice } from "@/app/lib/format";
 import Link from "next/link";
 import { useState } from "react";

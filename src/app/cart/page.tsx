@@ -1,5 +1,5 @@
 import CartEntry from "../../components/CartEntry";
-import { getCart } from "../lib/cart";
+import { getCart } from "./cart";
 import { formatPrice } from "../lib/format";
 import { setProductQuantity } from "./action";
 
@@ -8,45 +8,45 @@ export default async function CartPage() {
 
   console.log("this is cart", cart);
   // nodemailer welcome message
-  const transporter = nodemailer.createTransport({
-    service: "gmail", // or another email service
-    auth: {
-      user: "ammaraslam7164@gmail.com",
-      pass: "wefopxlsdumlohpx",
-    },
-  });
+  // const transporter = nodemailer.createTransport({
+  //   service: "gmail", // or another email service
+  //   auth: {
+  //     user: "ammaraslam7164@gmail.com",
+  //     pass: "wefopxlsdumlohpx",
+  //   },
+  // });
 
   // Send welcome email function
-  const sendWelcomeEmail = (userEmail, userName, total) => {
-    const mailOptions = {
-      from: "ammaraslam7164@gmail.com", // sender's emai
-      to: userEmail, // receiver's email
-      subject: "Welcome to Our Website!",
-      html: `
-        <h2>Hello ${userName},</h2>
-         <h3>Your Total Amount: ${formatPrice(total)}</h2>
-        <p>Thanks for happy shopping!</p>
+  // const sendWelcomeEmail = (userEmail, userName, total) => {
+  //   const mailOptions = {
+  //     from: "ammaraslam7164@gmail.com", // sender's emai
+  //     to: userEmail, // receiver's email
+  //     subject: "Welcome to Our Website!",
+  //     html: `
+  //       <h2>Hello ${userName},</h2>
+  //        <h3>Your Total Amount: ${formatPrice(total)}</h2>
+  //       <p>Thanks for happy shopping!</p>
 
-        <p>Feel free to explore and let us know if you need any help.</p>
-        <p>Best regards,<br/>Safara Academy</p>
-      `,
-    };
+  //       <p>Feel free to explore and let us know if you need any help.</p>
+  //       <p>Best regards,<br/>Safara Academy</p>
+  //     `,
+  //   };
 
     // Send the email
-    transporter.sendMail(mailOptions, (error, info) => {
-      if (error) {
-        console.log("Error sending email:", error);
-      } else {
-        console.log("Email sent: " + info.response);
-      }
-    });
-  };
+  //   transporter.sendMail(mailOptions, (error, info) => {
+  //     if (error) {
+  //       console.log("Error sending email:", error);
+  //     } else {
+  //       console.log("Email sent: " + info.response);
+  //     }
+  //   });
+  // };
   const handleCheckout = (email, name, total) => {
     if (!email || !name || !total) {
       return;
     }
 
-    sendWelcomeEmail(email, name, total);
+    // sendWelcomeEmail(email, name, total);
   };
 
   return (

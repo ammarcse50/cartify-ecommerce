@@ -9,14 +9,13 @@ const SocialSignIn = () => {
   const router = useRouter();
   const session = useSession(authOption);
 
-  const handleSocialSignIn = (provider:string) => {
+  const handleSocialSignIn = (provider: string) => {
     const resp = signIn(provider, { redirect: false });
+  };
 
-  };  
-  
   if (session.status === "authenticated") {
-      router.push("/"); 
-    }
+  window.location.href="/"
+  }
 
   return (
     <div className="flex flex-col gap-4 items-center">
