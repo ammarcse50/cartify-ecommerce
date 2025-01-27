@@ -27,15 +27,15 @@ export async function getCart(): Promise<ShoppingCart | null> {
     const localCartId = cookieStore.get("localCartId")?.value;
     const cart = localCartId
       ? await prisma.cart?.findFirst({
-          where: { id: Number(localCartId) },
-          include: {
-            items: {
-              include: {
-                product: true,
-              },
+        where: { id: Number(localCartId) },
+        include: {
+          items: {
+            include: {
+              product: true,
             },
           },
-        })
+        },
+      })
       : null;
 
     if (!cart) {
@@ -69,7 +69,8 @@ export async function createCart(): Promise<ShoppingCart> {
       path: "/",
       maxAge: 60 * 60 * 24 * 7, // 7 days
     });
-
+    
+     console.log("from new cart",newCart);
     return {
       ...newCart,
       items: [],

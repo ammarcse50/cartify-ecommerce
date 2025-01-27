@@ -41,7 +41,7 @@ export default async function Home({
             <Image
               src={products[1]?.imageUrl}
               alt={products[1]?.name}
-              width={400}
+              width={500}
               height={800}
               className="max-w-sm rounded-lg shadow-2xl"
               priority

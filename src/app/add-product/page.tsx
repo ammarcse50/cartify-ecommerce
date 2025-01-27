@@ -36,7 +36,7 @@ const page = () => {
 
     // Insert the product into the database
     try {
-      await prisma.product.create({
+      await prisma.products.create({
         data: product,
       });
 

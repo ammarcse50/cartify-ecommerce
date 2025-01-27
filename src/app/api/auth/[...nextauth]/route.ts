@@ -70,63 +70,75 @@ export const authOption = {
 
   callbacks: {
     // SignIn Callback (Handle custom sign-in logic like OAuth integration)
-  async signIn({ user, account }) {
-    console.log("hitting signIn",account);
-    if (account.provider === "google") {
-      const { name, email } = user;
-      console.log("Google SignIn user session data", user);
-  
-      try {
-        // Check if user already exists in the database
-        const userExist = await prisma.users.findFirst({
-          where: { email },
-        });
-  
-        if (!userExist) {
-          console.log("User does not exist, creating a new user...");
-  
-          // If user doesn't exist, create a new one
-          const newUser = await prisma.users.create({
-            data: {
-              email,
-              password: user.password || "", // Google users don't have a password
-              username: user.name, // Default to email if name is not available
-              company_id: Number(randomInt(1, 33)), // Generate company_id between 1 and 32
-              created_at: new Date(), // Current timestamp
-              created_by: Number(Date.now()), // Unix timestamp in milliseconds
-              updated_at: new Date(),
-              updated_by: Number(Date.now()),
-              username_secondary: name || "", // Use name as secondary username
-              phone: user.phone || null, // You can leave it empty or populate from Google data if available
-              language_id_default_choice: null,
-              is_active: true,
-              is_approved: true,
-              is_default_user: true,
-              is_lock: false,
-              is_temporary_password: false,
-              role_id: Number(randomInt(1, 20)), // Generate role_id between 1 and 19
-            },
-          });
-  
-          console.log("New user created:", newUser);
-  
-          return true; // User created successfully
-        } else {
-          console.log("Existing user found:", email);
-          return true; // User already exists
-        }
-      } catch (error) {
-        console.error("Error creating user:", error);
-        return false; // If error occurs, deny sign-in
-      }
-    } else {
-      return user; // Handle non-Google sign-ins normally
-    }
-  },
     // JWT callback - Adding user fields to JWT token
+    async signIn({ user, account }) {
+
+      console.log("signIN before ");
+      setTimeout(() => {
+        console.log("after signIn execution");
+      }, 1000);
+      console.log("after execution signIn");
+
+
+      if (account.provider === "google") {
+        const { name, email } = user;
+
+        try {
+          // Check if user already exists in the database
+          const userExist = await prisma.users.findFirst({
+            where: { email },
+          });
+
+          if (!userExist) {
+            console.log("User does not exist, creating a new user...");
+
+            // If user doesn't exist, create a new one
+            const newUser = await prisma.users.create({
+              data: {
+                email,
+                password: user.password || "", // Google users don't have a password
+                username: user.name, // Default to email if name is not available
+                company_id: Number(randomInt(1, 33)), // Generate company_id between 1 and 32
+                created_at: new Date(), // Current timestamp
+                created_by: Number(Date.now()), // Unix timestamp in milliseconds
+                updated_at: new Date(),
+                updated_by: Number(Date.now()),
+                username_secondary: name || "", // Use name as secondary username
+                phone: user.phone || null, // You can leave it empty or populate from Google data if available
+                language_id_default_choice: null,
+                is_active: true,
+                is_approved: true,
+                is_default_user: true,
+                is_lock: false,
+                is_temporary_password: false,
+                role_id: Number(randomInt(1, 20)), // Generate role_id between 1 and 19
+              },
+            });
+
+            console.log("New user created:", newUser);
+
+            return true; // User created successfully
+          } else {
+            console.log("Existing user found:", email);
+            return true; // User already exists
+          }
+        } catch (error) {
+          console.error("Error creating user:", error);
+          return false; // If error occurs, deny sign-in
+        }
+      } else {
+        return user; // Handle non-Google sign-ins normally
+      }
+    },
     async jwt({ token, user }) {
+      console.log("jwt before ");
+      setTimeout(() => {
+        console.log("after jwt execution");
+      }, 1000);
+      console.log("after execution jwt");
+
       if (user) {
-        console.log("Adding user data to JWT:", user);
+        console.log("Adding user data to JWT:");
         token.id = user.id;
         token.email = user.email;
         token.phone = user.phone || "";
@@ -149,8 +161,14 @@ export const authOption = {
 
     // Session callback - Adding token data to session
     async session({ session, token }) {
+      console.log("session before ");
+      setTimeout(() => {
+        console.log("after session execution");
+      }, 1000);
+      console.log("after execution session");
+
       if (token) {
-        console.log("Adding token data to session:", token);
+        console.log("Adding token data to session:");
         session.user.id = token.id;
         session.user.email = token.email;
         session.user.phone = token.phone;
@@ -170,9 +188,10 @@ export const authOption = {
       }
       return session;
     },
+
   },
 
-  
+
 
   pages: {
     signIn: "/login", // Redirect to custom login page

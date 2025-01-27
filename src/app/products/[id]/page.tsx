@@ -15,7 +15,7 @@ interface ProductPageProps {
 
 const getProduct = cache(async (id: string) => {
   // Ensure id is used correctly in the database query
-  const product = await prisma.product.findFirst({
+  const product = await prisma.products.findFirst({
     where: { id: parseInt(id) }, // Convert id to a number for the database query
   });
   // Handle not found product
@@ -24,6 +24,9 @@ const getProduct = cache(async (id: string) => {
   }
   return product;
 });
+
+
+
 export async function generateMetadata({
   params,
 }: ProductPageProps): Promise<Metadata> {
@@ -38,6 +41,8 @@ export async function generateMetadata({
   };
 }
 
+
+
 const page = async ({ params }: ProductPageProps) => {
   const { id } = await params; // Destructure id from params
   console.log("id is", id);
@@ -49,7 +54,7 @@ const page = async ({ params }: ProductPageProps) => {
         src={product?.imageUrl}
         alt={product?.name}
         width={500}
-        height={800}
+        height={500}
         className="rounded-lg"
         priority
       />
