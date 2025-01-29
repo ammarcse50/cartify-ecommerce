@@ -1,9 +1,8 @@
 import prisma from "@/app/lib/db";
-import { NextResponse } from "next/server";
-import bcrypt from "bcryptjs";
-import { randomInt } from "crypto";
+import { NextRequest, NextResponse } from "next/server";
 
-// Custom JSON serializer to handle BigInt fields
+
+// Custom JSON serialization function
 const json = (param: any): any => {
   return JSON.stringify(
     param,
@@ -11,92 +10,51 @@ const json = (param: any): any => {
   );
 };
 
-export async function GET() {
-  try {
-    const users = await prisma.users.findMany();
-    
-    // Serialize the BigInt values to strings before sending the response
-    const serializedUsers = users.map(user => JSON.parse(json(user))); // Deserialize back to object
-    
-    return NextResponse.json(serializedUsers);
-  } catch (error) {
-    console.error(error);
-    return NextResponse.json(
-      { error: "Error fetching users." },
-      { status: 500 }
-    );
-  }
-}
-
-export async function POST(request: Request) {
-  const { email, password, username } = await request.json();
-
-  // Validate input
-  if (!email || !password || !username) {
-    return NextResponse.json(
-      { error: "Email, username, and password are required." },
-      { status: 400 }
-    );
-  }
+export async function POST(req: NextRequest) {
+  const { name, total } = await req.json();
+  console.log(name, total);
 
   try {
-    const result = await prisma.$transaction(async (tx) => {
-      const existingUser = await tx.users.findFirst({
-        where: { email },
-      });
-
-      if (existingUser) {
-        // User exists, check password
-        const isPasswordValid = await bcrypt.compare(password, existingUser.password);
-
-        if (!isPasswordValid) {
-          throw new Error("Invalid email or password.");
-        }
-
-        // Serialize BigInt fields before sending user data in response
-        const serializedUser = JSON.parse(json(existingUser)); // Deserialize back to object
-
-        return { message: "Login successful", user: serializedUser };
-      } else {
-        // User doesn't exist, create a new user
-        const hashedPassword = await bcrypt.hash(password, 10);
-
-        const newUser = await tx.users.create({
-          data: {
-            email,
-            password: hashedPassword,
-            username,
-            company_id: Number(randomInt(1, 33)), // Generate company_id between 1 and 32
-            created_at: new Date(), // Current timestamp
-            created_by: Number(Date.now()), // Unix timestamp in milliseconds
-            updated_at: new Date(),
-            updated_by: Number(Date.now()),
-            username_secondary: "",
-            phone: "",
-            language_id_default_choice: null,
-            is_active: true,
-            is_approved: true,
-            is_default_user: true,
-            is_lock: false,
-            is_temporary_password: false,
-            role_id: Number(randomInt(1, 20)), // Generate role_id between 1 and 19
-          },
-        });
-
-        // Serialize BigInt fields before sending user data in response
-        const serializedNewUser = JSON.parse(json(newUser)); // Deserialize back to object
-
-        return { message: "Signup successful", user: serializedNewUser };
-      }
+    // Find the last invoice to increment serial number
+    const lastInvoice = await prisma.invoice.findFirst({
+      orderBy: {
+        serial_number: "desc",
+      },
+      select: {
+        serial_number: true,
+      },
     });
 
-    // Send response back to frontend
-    return NextResponse.json(result);
+    const newSerialNumber = lastInvoice ? lastInvoice.serial_number + 1 : 1;
+    const invoiceCode = `INV-${newSerialNumber}-${Date.now()}`;
+
+    // Create a new invoice in the database
+    const invoice = await prisma.invoice.create({
+      data: {
+        name: name || "",
+        mobile: "",
+
+        total_net_amount: total,
+        total_gross_amount: total,
+        serial_number: newSerialNumber,
+        invoice_code: invoiceCode,
+        invoice_type_id: 1,
+        profile_id: 1,
+        shipping_address: "",
+        ip_address: "127.0.0.1",
+        created_by: 1,
+        updated_by: 1,
+        is_active: true,
+        is_payment_gateway_scheduler_check: false,
+      },
+    });
+
+    // Respond with success using the custom JSON function
+    return NextResponse.json({ success: true, invoice: JSON.parse(json(invoice)) });
+
   } catch (error) {
-    console.error(error);
-    return NextResponse.json(
-      { error: error.message || "Internal server error." },
-      { status: 500 }
-    );
+    console.error("Error creating invoice:", error);
+    // Handle the error and send a proper response
+    return NextResponse.json({ success: false, error: error });
   }
 }

@@ -21,7 +21,7 @@ export default function CartEntry({
 
   return (
     <div>
-      <div className="flex flex-wrap items-center gap-4">
+      <div className="flex flex-wrap items-center gap-4 mb-3">
         <Image
           src={product?.imageUrl}
           alt={product?.name}

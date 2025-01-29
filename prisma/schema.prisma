@@ -25,18 +25,17 @@ model account {
 
 model cart {
   id        Int        @id @default(autoincrement())
-  items     cartitem[]
   createdAt DateTime   @default(now())
   updatedAt DateTime?
-
+  items     cartitem[]
 }
 
 model cartitem {
   id        Int      @id @default(autoincrement())
   productId Int
-  product   products @relation(fields: [productId], references: [id], onDelete: Cascade)
   quantity  Int
   cartId    Int
+  product   products @relation(fields: [productId], references: [id], onDelete: Cascade)
   cart      cart     @relation(fields: [cartId], references: [id])
 }
 
@@ -77,7 +76,7 @@ model users {
   is_active                  Boolean   @default(true)
   is_approved                Boolean   @default(false)
   is_temporary_password      Boolean   @default(false)
- 
+  invoice                    invoice[]
 
   @@unique([username, company_id], map: "username")
   @@index([role_id], map: "ref_role_id")
@@ -88,4 +87,158 @@ model verificationtoken {
   identifier String
   token      String   @unique(map: "VerificationToken_token_key")
   expires    DateTime
+}
+
+model item_prices {
+  id                     BigInt    @id @default(autoincrement())
+  company_id             Int
+  item_category_id       Int
+  item_id                Int
+  member_category_id     Int?
+  base_price             Decimal   @db.Decimal(18, 3)
+  vat_in_percentage      Decimal?  @db.Decimal(18, 3)
+  discount_in_percentage Decimal?  @db.Decimal(18, 3)
+  is_vat_applicable      Boolean   @default(false)
+  is_discount_applicable Boolean   @default(false)
+  created_by             Int
+  updated_by             Int?
+  created_at             DateTime
+  updated_at             DateTime?
+
+  @@index([company_id, item_category_id, item_id])
+}
+
+model item_categories {
+  id                    BigInt    @id @default(autoincrement())
+  company_id            BigInt
+  invoice_similar_code  String?   @db.VarChar(100)
+  name                  String?   @db.VarChar(100)
+  code                  String?   @db.VarChar(100)
+  is_membership_related Int?
+  created_at            DateTime?
+  created_by            BigInt
+  updated_at            DateTime?
+  updated_by            BigInt?
+  is_active             Boolean   @default(true)
+
+  @@index([company_id])
+}
+
+model items {
+  id                                BigInt    @id @default(autoincrement())
+  company_id                        BigInt
+  item_category_id                  BigInt
+  is_fine_applied                   Boolean   @default(false)
+  max_age_allowed_to_subscribe      Int?
+  is_add_subscription               Boolean   @default(false)
+  is_nominee_allowed                Int?
+  subscription_close_if_unpaid_year Int?
+  name                              String?   @db.VarChar(200)
+  code                              String?   @db.VarChar(100)
+  uom_id                            Int?
+  acc_ledger_code                   String?   @db.VarChar(100)
+  price                             Decimal?  @db.Decimal(18, 3)
+  variant                           String?   @db.VarChar(100)
+  created_at                        DateTime
+  created_by                        BigInt
+  updated_at                        DateTime?
+  updated_by                        BigInt?
+  is_active                         Boolean   @default(true)
+
+  @@index([company_id, item_category_id])
+}
+
+model invoice {
+  id                                      BigInt                     @id @default(autoincrement())
+  invoice_status                          invoice_invoice_status     @default(posted)
+  company_id                              Int?
+  serial_number                           Int
+  invoice_code                            String?                    @unique(map: "Invoice_invoice_code_key")
+  invoice_type_id                         BigInt?
+  member_service_type_id                  Int?
+  profile_id                              BigInt?
+  user                                    users?                     @relation(fields: [profile_id], references: [id], onUpdate: NoAction, onDelete: NoAction)
+  member_no                               String?
+  name                                    String
+  mobile                                  String
+  shipping_address                        String?
+  total_gross_amount                      Decimal?                   @db.Decimal(16, 2)
+  total_discount_percentage               Decimal?                   @db.Decimal(10, 2)
+  total_discount                          Decimal?                   @db.Decimal(16, 2)
+  total_vat_percentage                    Decimal?                   @db.Decimal(10, 2)
+  total_vat                               Decimal?                   @db.Decimal(16, 2)
+  total_net_amount                        Decimal                    @db.Decimal(16, 2)
+  previous_due_collection                 Decimal?                   @db.Decimal(16, 2)
+  deposit_amount                          Decimal?                   @db.Decimal(16, 2)
+  due_amount                              Decimal?                   @db.Decimal(16, 2)
+  so_reference                            String?
+  is_verified                             Boolean?
+  verified_by                             BigInt?
+  verified_at                             DateTime?
+  is_approved                             Boolean?
+  approved_by                             BigInt?
+  approved_at                             DateTime?
+  quotation_reference                     String?
+  remarks                                 String?
+  expire_date                             DateTime?
+  ip_address                              String?
+  pg_order_no                             String?
+  pg_transaction_code                     String?
+  pg_request_status                       invoice_pg_request_status?
+  pg_datetime                             DateTime?
+  created_at                              DateTime                   @default(now())
+  created_by                              BigInt?
+  updated_at                              DateTime?                  @updatedAt
+  updated_by                              BigInt?
+  is_active                               Boolean                    @default(true)
+  is_lock                                 Boolean                    @default(false)
+  is_payment_gateway_scheduler_check      Boolean                    @default(false)
+  payment_gateway_scheduler_check_version String?
+  is_settlement                           Boolean                    @default(false)
+  settlement_date                         DateTime?
+  pg_transaction_charge_amount            Decimal?                   @db.Decimal(18, 3)
+  pg_transaction_charge_in_percentage     Decimal?                   @db.Decimal(18, 3)
+  invoice_details                         invoice_details[]
+
+  @@index([invoice_code], map: "Invoice_invoice_code_idx")
+}
+
+model invoice_details {
+  id                  BigInt    @id @default(autoincrement())
+  invoice_id          BigInt
+  item_category_id    Int?
+  item_id             BigInt
+  quantity            Int
+  uom_id              BigInt?
+  unit_price          Decimal?
+  discount_percentage Decimal?
+  discount_amount     Decimal?
+  vat_percentage      Decimal?
+  vat_amount          Decimal?
+  gross_price         Decimal?
+  net_price           Decimal?
+  remarks             String?
+  created_at          DateTime  @default(now())
+  created_by          BigInt?
+  updated_at          DateTime?
+  updated_by          BigInt?
+  is_active           Boolean   @default(true)
+  invoiceId           BigInt?
+  invoices            invoice   @relation(fields: [invoice_id], references: [id])
+
+  @@index([invoice_id])
+}
+
+enum invoice_invoice_status {
+  posted
+  on_hold
+  paid
+  refunded
+  draft
+  cancel
+}
+
+enum invoice_pg_request_status {
+  pending
+  completed
 }

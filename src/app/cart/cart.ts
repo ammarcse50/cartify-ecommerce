@@ -58,8 +58,14 @@ export async function getCart(): Promise<ShoppingCart | null> {
 
 export async function createCart(): Promise<ShoppingCart> {
   try {
+
+     
     const newCart = await prisma.cart.create({
-      data: {},
+      data: {
+
+
+        
+      },
     });
 
     // Set cookie for `localCartId`
