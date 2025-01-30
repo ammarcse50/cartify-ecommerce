@@ -20,6 +20,7 @@ const Invoice = async () => {
   });
 
   const name = user?.username;
+  const phone = user?.phone;
 
   // Fetch the invoice data for the user
   const invoice = await prisma.invoice.findFirst({
@@ -47,6 +48,7 @@ const Invoice = async () => {
   );
 
   console.log(name, email);
+  console.log("invoice total", invoice?.total_net_amount);
 
   console.log("productwith", invoiceItemsWithProducts);
 
@@ -116,9 +118,10 @@ const Invoice = async () => {
       {/* Confirm Button Section */}
 
       <ConfirmPay
-        name={name}
-        total={formatPrice(invoice?.total_net_amount)}
-        email={email}
+        name={name || ""}
+        total={parseFloat(invoice?.total_net_amount || 0)}
+        email={email || ""}
+        phone={phone || ""}
         products={invoiceItemsWithProducts}
       />
     </div>

@@ -12,11 +12,16 @@ export default async function CartPage() {
   const session = await getServerSession(authOption);
   console.log(session?.user);
   const email = session?.user?.email;
+ 
+   
+
   const exist = await prisma.users.findFirst({
     where: { email },
   });
 
   console.log(exist);
+
+  console.log(exist?.phone);
 
   if (!session?.user) {
     return (
