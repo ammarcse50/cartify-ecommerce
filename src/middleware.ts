@@ -4,7 +4,7 @@ import { NextResponse } from "next/server"
 
 export const middleware = async (request) => {
 
-    const token = await  cookies().get("next-auth.session-token")
+    const token = await cookies().get("next-auth.session-token")
     if (!token) {
         return NextResponse.redirect(new URL("/login", request.url))
     }
@@ -14,7 +14,5 @@ export const middleware = async (request) => {
 }
 
 export const config = {
-
-
     matcher: ["/cart", "/dashboard"]
 }

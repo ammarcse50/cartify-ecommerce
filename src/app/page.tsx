@@ -50,7 +50,7 @@ export default async function Home({
               <h1 className="text-5xl font-bold">{products[1]?.name}</h1>
               <p className="py-6">{products[1]?.description}</p>
               <Link
-                href={"/products/" + products[1].id}
+                href={"/products/" + products[1]?.id}
                 className="px-4 py-2 bg-blue-500 text-white inline-block rounded-md hover:bg-blue-600 transition"
               >
                 Check It Out

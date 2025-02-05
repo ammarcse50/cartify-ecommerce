@@ -78,17 +78,13 @@ export const authOption = {
         console.log("after signIn execution");
       }, 1000);
       console.log("after execution signIn");
-
-
       if (account.provider === "google") {
         const { name, email } = user;
-
         try {
           // Check if user already exists in the database
           const userExist = await prisma.users.findFirst({
             where: { email },
           });
-
           if (!userExist) {
             console.log("User does not exist, creating a new user...");
 
@@ -114,9 +110,7 @@ export const authOption = {
                 role_id: Number(randomInt(1, 20)), // Generate role_id between 1 and 19
               },
             });
-
             console.log("New user created:", newUser);
-
             return true; // User created successfully
           } else {
             console.log("Existing user found:", email);
@@ -166,7 +160,6 @@ export const authOption = {
         console.log("after session execution");
       }, 1000);
       console.log("after execution session");
-
       if (token) {
         console.log("Adding token data to session:");
         session.user.id = token.id;
@@ -188,11 +181,7 @@ export const authOption = {
       }
       return session;
     },
-
   },
-
-
-
   pages: {
     signIn: "/login", // Redirect to custom login page
   },

@@ -27,11 +27,11 @@ const ConfirmPay = ({
   invoice_id: invoice_id,
 }: ConfirmPayProps) => {
   const formatPhoneNumber = (phone: string) => {
-    let formattedPhone = phone.replace(/\D/g, ""); // Remove non-numeric characters
+    let formattedPhone = phone.replace(/\D/g, "");
     if (!formattedPhone.startsWith("880")) {
-      formattedPhone = "880" + formattedPhone; // Add 880 prefix if not present
+      formattedPhone = "880" + formattedPhone;
     }
-    return formattedPhone; // Return the phone number without the + sign
+    return formattedPhone;
   };
 
   const handleSendInvoice = async () => {
@@ -105,6 +105,14 @@ const ConfirmPay = ({
             const data_sms = await response_SMS.json();
 
             if (data_sms.error) {
+              // delete cart and cartitems
+              await fetch("/api/cartDelete", {
+                method: "DELETE",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({email}),
+              });
               Swal.fire({
                 title: "Error",
                 text: "Failed to send SMS notification.",
@@ -118,7 +126,7 @@ const ConfirmPay = ({
               text: "The invoice has been sent successfully.",
               icon: "success",
               confirmButtonText: "Okay",
-            }).then(() => {
+            }).then(async () => {
               window.location.href = "/";
             });
           } else {
@@ -155,7 +163,6 @@ const ConfirmPay = ({
           }
         } catch (error) {
           console.log(error);
-        
         }
       } else {
         Swal.fire("Cancelled", "The invoice was not sent.", "info");

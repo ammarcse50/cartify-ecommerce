@@ -4,7 +4,6 @@ import { authOption } from "../api/auth/[...nextauth]/route";
 import { getServerSession } from "next-auth";
 import { formatPrice } from "../lib/format";
 import ConfirmPay from "@/components/ConfirmPay";
-import { number } from "zod";
 
 const Invoice = async () => {
   const session = await getServerSession(authOption);
@@ -57,7 +56,7 @@ const Invoice = async () => {
   if (!invoice || invoiceDetails.length === 0) {
     return <p>No invoice or items found.</p>;
   }
-    console.log("invoice_id", invoice.id);
+  console.log("invoice_id", invoice.id);
   return (
     <div className="max-w-4xl mx-auto bg-white p-6 shadow-lg rounded-lg">
       <h2 className="text-3xl font-bold text-center my-6 text-gray-900">

@@ -11,9 +11,8 @@ export default async function CartPage() {
   const cart = await getCart();
   const session = await getServerSession(authOption);
   console.log(session?.user);
+  console.log("checking auth session", session?.user);
   const email = session?.user?.email;
- 
-   
 
   const exist = await prisma.users.findFirst({
     where: { email },

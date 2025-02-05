@@ -27,16 +27,18 @@ model cart {
   id        Int        @id @default(autoincrement())
   createdAt DateTime   @default(now())
   updatedAt DateTime?
+  userId    BigInt?
+  user      users?     @relation(fields: [userId], references: [id])
   items     cartitem[]
 }
 
 model cartitem {
-  id        Int      @id @default(autoincrement())
+  id        Int       @id @default(autoincrement())
   productId Int
   quantity  Int
-  cartId    Int
-  product   products @relation(fields: [productId], references: [id], onDelete: Cascade)
-  cart      cart     @relation(fields: [cartId], references: [id])
+  cartId    Int?
+  product   products? @relation(fields: [productId], references: [id], onDelete: Cascade)
+  cart      cart?     @relation(fields: [cartId], references: [id], onDelete: Cascade)
 }
 
 model products {
@@ -77,6 +79,7 @@ model users {
   is_approved                Boolean   @default(false)
   is_temporary_password      Boolean   @default(false)
   invoice                    invoice[]
+  cart                       cart[]
 
   @@unique([username, company_id], map: "username")
   @@index([role_id], map: "ref_role_id")
