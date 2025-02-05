@@ -157,7 +157,6 @@ model invoice {
   invoice_type_id                         BigInt?
   member_service_type_id                  Int?
   profile_id                              BigInt?
-  user                                    users?                     @relation(fields: [profile_id], references: [id], onUpdate: NoAction, onDelete: NoAction)
   member_no                               String?
   name                                    String
   mobile                                  String
@@ -198,6 +197,7 @@ model invoice {
   settlement_date                         DateTime?
   pg_transaction_charge_amount            Decimal?                   @db.Decimal(18, 3)
   pg_transaction_charge_in_percentage     Decimal?                   @db.Decimal(18, 3)
+  user                                    users?                     @relation(fields: [profile_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   invoice_details                         invoice_details[]
 
   @@index([invoice_code], map: "Invoice_invoice_code_idx")
@@ -229,6 +229,54 @@ model invoice_details {
   @@index([invoice_id])
 }
 
+model config_details {
+  id               Int                   @id @default(autoincrement()) @db.UnsignedInt
+  company_id       Int
+  config_module_id Int
+  config_key       String                @db.VarChar(100)
+  config_value     String                @db.VarChar(255)
+  type             config_details_type
+  status           config_details_status @default(active)
+  remarks          String?               @db.Text
+  created_at       DateTime              @db.DateTime(0)
+  updated_at       DateTime?             @db.DateTime(0)
+}
+
+model configs {
+  id                       Int            @id @default(autoincrement())
+  name                     String         @db.VarChar(120)
+  is_sms_email_for_invoice Int            @default(0)
+  is_sms_send_for_invoice  Int            @default(0)
+  status                   configs_status @default(active)
+  created_at               DateTime       @db.DateTime(0)
+  updated_at               DateTime?      @db.DateTime(0)
+}
+
+model emailscheduler {
+  id            Int       @id @default(autoincrement())
+  email         String?   @db.VarChar(255)
+  name          String?   @db.VarChar(255)
+  total         Decimal?  @db.Decimal(16, 2)
+  invoice_id    BigInt
+  phone         String?   @db.VarChar(20)
+  attemptCount  Int?      @default(0)
+  status        String?   @db.VarChar(50)
+  lastAttemptAt DateTime? @default(now())
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime? @default(now()) @updatedAt
+}
+
+model smsscheduler {
+  id       Int    @id @default(autoincrement())
+  content  String
+  contact  String
+  sender   String
+  receiver String
+  total    String
+  userId   String
+  userPass String
+}
+
 enum invoice_invoice_status {
   posted
   on_hold
@@ -241,4 +289,22 @@ enum invoice_invoice_status {
 enum invoice_pg_request_status {
   pending
   completed
+}
+
+enum configs_status {
+  active
+  inactive
+}
+
+enum config_details_type {
+  string
+  number
+  array
+  boolean
+  json
+}
+
+enum config_details_status {
+  active
+  inactive
 }

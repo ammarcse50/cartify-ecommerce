@@ -84,7 +84,7 @@ export async function POST(req: NextRequest) {
 
     // Attempt to send the email
     try {
-        await transporter.sendMail(mailOptions);
+        await transporter.sendMail(mailOptions)
         return new Response(JSON.stringify({ message: 'Email sent successfully' }), {
             status: 200,
             headers: { 'Content-Type': 'application/json' },

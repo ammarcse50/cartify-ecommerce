@@ -7,8 +7,16 @@ interface ConfirmPayProps {
   total: number;
   email: string;
   phone: string;
+  invoice_id: any;
   products: any[];
 }
+
+// Serialize BigInt to String
+const serializeBigInt = (param: any): any => {
+  return JSON.stringify(param, (key, value) =>
+    typeof value === "bigint" ? value.toString() : value
+  );
+};
 
 const ConfirmPay = ({
   name,
@@ -16,6 +24,7 @@ const ConfirmPay = ({
   email,
   products,
   phone,
+  invoice_id: invoice_id,
 }: ConfirmPayProps) => {
   const formatPhoneNumber = (phone: string) => {
     let formattedPhone = phone.replace(/\D/g, ""); // Remove non-numeric characters
@@ -48,6 +57,18 @@ const ConfirmPay = ({
       email,
       products: filteredProducts,
     };
+    const request_Email_failed_Data = {
+      name,
+      total,
+      email,
+      invoice_id: invoice_id,
+    };
+
+    // Serialize request data before sending to handle BigInt
+    const serializedRequestData = JSON.parse(serializeBigInt(requestData));
+    const serializedFailedRequestData = JSON.parse(
+      serializeBigInt(request_Email_failed_Data)
+    );
 
     Swal.fire({
       title: "Are you sure you want to send the invoice?",
@@ -64,7 +85,7 @@ const ConfirmPay = ({
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify(requestData),
+            body: JSON.stringify(serializedRequestData),
           });
 
           const data = await response.json();
@@ -101,8 +122,31 @@ const ConfirmPay = ({
               window.location.href = "/";
             });
           } else {
+            console.log("request_failed_data", name, total, email, invoice_id);
+            const response_failed_data = await fetch(
+              "/api/failedEmailSchedule",
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify(serializedFailedRequestData),
+              }
+            );
+
+            const send_failed_data = await response_failed_data.json();
+
+            if (response_failed_data && send_failed_data.message) {
+              Swal.fire({
+                title: "Success!",
+                text: "The invoice Reschedule successfully.",
+                icon: "success",
+                confirmButtonText: "Okay",
+              });
+            }
+
             Swal.fire({
-              title: "Error",
+              title: "Invoice Error",
               text:
                 data.error || "Something went wrong while sending the invoice.",
               icon: "error",
@@ -110,12 +154,8 @@ const ConfirmPay = ({
             });
           }
         } catch (error) {
-          Swal.fire({
-            title: "Error",
-            text: "An unexpected error occurred while sending the invoice.",
-            icon: "error",
-            confirmButtonText: "Okay",
-          });
+          console.log(error);
+        
         }
       } else {
         Swal.fire("Cancelled", "The invoice was not sent.", "info");
