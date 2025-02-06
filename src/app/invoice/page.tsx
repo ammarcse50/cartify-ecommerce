@@ -114,9 +114,7 @@ const Invoice = async () => {
           {formatPrice(invoice?.total_net_amount)}
         </p>
       </div>
-
       {/* Confirm Button Section */}
-
       <ConfirmPay
         name={name || ""}
         total={parseFloat(invoice?.total_net_amount || 0)}

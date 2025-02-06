@@ -24,7 +24,7 @@ const ConfirmPay = ({
   email,
   products,
   phone,
-  invoice_id: invoice_id,
+  invoice_id,
 }: ConfirmPayProps) => {
   const formatPhoneNumber = (phone: string) => {
     let formattedPhone = phone.replace(/\D/g, "");
@@ -57,11 +57,12 @@ const ConfirmPay = ({
       email,
       products: filteredProducts,
     };
+
     const request_Email_failed_Data = {
       name,
       total,
       email,
-      invoice_id: invoice_id,
+      invoice_id,
     };
 
     // Serialize request data before sending to handle BigInt
@@ -102,17 +103,31 @@ const ConfirmPay = ({
               }
             );
 
+            // Delete cart and cartitems
+            await fetch("/api/cartDelete", {
+              method: "DELETE",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ email }),
+            });
+
             const data_sms = await response_SMS.json();
 
             if (data_sms.error) {
-              // delete cart and cartitems
-              await fetch("/api/cartDelete", {
-                method: "DELETE",
+              await fetch("/api/smsscheduler", {
+                method: "POST",
                 headers: {
                   "Content-Type": "application/json",
                 },
-                body: JSON.stringify({email}),
+                body: JSON.stringify({
+                  sms_receiver: formattedPhone,
+                  sms_text: `Your order is placed. Paid amount: ${total} BDT. Thank you for your purchase!`,
+                  user_id: process.env.NEXT_PUBLIC_SMS_USER_ID,
+                  user_password: process.env.NEXT_PUBLIC_SMS_USER_PASSWORD,
+                }),
               });
+
               Swal.fire({
                 title: "Error",
                 text: "Failed to send SMS notification.",
@@ -126,11 +141,11 @@ const ConfirmPay = ({
               text: "The invoice has been sent successfully.",
               icon: "success",
               confirmButtonText: "Okay",
-            }).then(async () => {
+            }).then(() => {
               window.location.href = "/";
             });
           } else {
-            console.log("request_failed_data", name, total, email, invoice_id);
+            console.log("Request failed:", name, total, email, invoice_id);
             const response_failed_data = await fetch(
               "/api/failedEmailSchedule",
               {
@@ -142,27 +157,10 @@ const ConfirmPay = ({
               }
             );
 
-            const send_failed_data = await response_failed_data.json();
-
-            if (response_failed_data && send_failed_data.message) {
-              Swal.fire({
-                title: "Success!",
-                text: "The invoice Reschedule successfully.",
-                icon: "success",
-                confirmButtonText: "Okay",
-              });
-            }
-
-            Swal.fire({
-              title: "Invoice Error",
-              text:
-                data.error || "Something went wrong while sending the invoice.",
-              icon: "error",
-              confirmButtonText: "Try Again",
-            });
+            await response_failed_data.json();
           }
         } catch (error) {
-          console.log(error);
+          console.error("Error:", error);
         }
       } else {
         Swal.fire("Cancelled", "The invoice was not sent.", "info");
